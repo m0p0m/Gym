@@ -22,11 +22,10 @@ class WorkoutController {
     res.status(httpStatus.OK).send(plan);
   });
 
-  // Placeholder for completing a day's workout
   public completeDay = catchAsync(async (req: Request, res: Response) => {
-    // const { dayId, notes } = req.body;
-    // const session = await workoutService.completeWorkoutDay(req.user._id, dayId, notes);
-    res.status(httpStatus.NOT_IMPLEMENTED).send({ message: 'To be implemented' });
+    const { dayId, notes } = req.body;
+    const session = await workoutService.completeWorkoutDay(req.user!._id, dayId, notes);
+    res.status(httpStatus.OK).send(session);
   });
 }
 

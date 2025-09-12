@@ -30,6 +30,7 @@ const permissions = [
   // Trainer/Admin specific
   { name: 'workouts:create', description: 'Create workout plans' },
   { name: 'workouts:assign', description: 'Assign workouts to users' },
+  { name: 'diets:create', description: 'Create diet plans' },
   { name: 'diets:assign', description: 'Assign diets to users' },
   { name: 'subscriptions:update', description: 'Update user subscriptions' },
 ];
@@ -57,8 +58,12 @@ const seedDatabase = async () => {
 
   const adminPermissions = [
     ...userPermissions,
-    ...['users:create', 'users:read', 'users:update', 'workouts:create', 'workouts:assign', 'diets:assign', 'subscriptions:update']
-    .map(name => permissionMap.get(name))
+    ...[
+      'users:create', 'users:read', 'users:update',
+      'workouts:create', 'workouts:assign',
+      'diets:create', 'diets:assign',
+      'subscriptions:update'
+    ].map(name => permissionMap.get(name))
   ];
 
   await Role.create([

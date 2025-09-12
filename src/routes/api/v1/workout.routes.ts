@@ -31,10 +31,10 @@ router.get(
   workoutController.getMyActivePlan
 );
 
-// A placeholder for the completion route
 router.post(
   '/sessions/complete',
   auth(),
+  validate({ body: workoutValidation.completeDay.body }),
   workoutController.completeDay
 );
 

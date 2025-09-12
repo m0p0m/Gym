@@ -37,7 +37,15 @@ const assignPlanToUser = {
   }),
 };
 
+const completeDay = {
+  body: Joi.object().keys({
+    dayId: objectId.required(),
+    notes: Joi.string().allow(''),
+  }),
+};
+
 export default {
   createWorkoutPlan,
   assignPlanToUser,
+  completeDay,
 };

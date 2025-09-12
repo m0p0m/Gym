@@ -3,8 +3,10 @@ import httpStatus from 'http-status';
 import app from '../src/index';
 import User from '../src/models/user.model';
 import Role from '../src/models/role.model';
+import Permission from '../src/models/permission.model';
 import OTP from '../src/models/otp.model';
 import WorkoutPlan from '../src/models/workoutPlan.model';
+import WorkoutDay from '../src/models/workoutDay.model';
 import UserWorkoutSession from '../src/models/userWorkoutSession.model';
 
 describe('Workout Routes', () => {
@@ -34,8 +36,11 @@ describe('Workout Routes', () => {
     await UserWorkoutSession.deleteMany({});
 
     // Create roles and permissions
-    const trainerPermissions = await Role.create({ name: 'workouts:create', description: 'desc' }, { name: 'workouts:assign', description: 'desc' });
-    const trainerRole = await Role.create({ name: 'Trainer', permissions: trainerPermissions.map(p => p._id) });
+    const permissions = await Permission.insertMany([
+      { name: 'workouts:create', description: 'desc' },
+      { name: 'workouts:assign', description: 'desc' }
+    ]);
+    const trainerRole = await Role.create({ name: 'Trainer', permissions: permissions.map(p => p._id) });
     const userRole = await Role.create({ name: 'User', permissions: [] });
 
     // Create and login trainer
@@ -95,6 +100,24 @@ describe('Workout Routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body.plan._id).toBe(plan._id.toString());
+    });
+  });
+
+  describe('POST /api/v1/workouts/sessions/complete', () => {
+    it("should allow a user to mark a day's workout as complete", async () => {
+      const plan = await WorkoutPlan.create({ ...workoutPlanPayload, trainer: trainer._id });
+      const day = await WorkoutDay.create({ plan: plan._id, dayOfWeek: 'Monday', name: 'Test Day' });
+      await UserWorkoutSession.create({ user: regularUser._id, plan: plan._id });
+
+      const res = await request(app)
+        .post('/api/v1/workouts/sessions/complete')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ dayId: day._id, notes: 'Felt strong today.' })
+        .expect(httpStatus.OK);
+
+      expect(res.body.completedDays).toHaveLength(1);
+      expect(res.body.completedDays[0].dayId).toBe(day._id.toString());
+      expect(res.body.completedDays[0].notes).toBe('Felt strong today.');
     });
   });
 });

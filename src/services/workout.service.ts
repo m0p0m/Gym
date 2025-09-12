@@ -94,6 +94,31 @@ class WorkoutService {
     }
     return activeSession;
   }
+
+  /**
+   * Marks a workout day as complete for a user.
+   * @param {IUser['_id']} userId
+   * @param {IWorkoutDay['_id']} dayId
+   * @param {string} notes
+   * @returns {Promise<any>}
+   */
+  public async completeWorkoutDay(userId: IUser['_id'], dayId: IWorkoutDay['_id'], notes?: string) {
+    const session = await UserWorkoutSession.findOne({ user: userId, isActive: true });
+    if (!session) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'No active workout session found');
+    }
+
+    // Check if the day has already been completed to avoid duplicates
+    const alreadyCompleted = session.completedDays.some(d => d.dayId.equals(dayId));
+    if (alreadyCompleted) {
+      // Or maybe update the existing one? For now, let's throw an error.
+      throw new ApiError(httpStatus.BAD_REQUEST, 'This workout day has already been marked as complete.');
+    }
+
+    session.completedDays.push({ dayId, notes, dateCompleted: new Date() });
+    await session.save();
+    return session;
+  }
 }
 
 export default new WorkoutService();
