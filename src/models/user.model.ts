@@ -1,5 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 import { IRole } from './role.model';
+import { ISubscription } from './subscription.model';
 
 // Nested Schemas for better organization
 const MedicalInfoSchema = new Schema({
@@ -28,6 +29,7 @@ export interface IUser extends Document {
   lastName: string;
   phoneNumber: string;
   role: IRole['_id'];
+  subscriptions: ISubscription['_id'][];
   refreshTokens?: string[];
 
   // --- Profile fields ---
@@ -56,13 +58,6 @@ export interface IUser extends Document {
     waist?: number;
     hips?: number;
   };
-
-  subscription?: {
-    plan: string;
-    startDate: Date;
-    endDate: Date;
-    isActive: boolean;
-  };
 }
 
 const UserSchema = new Schema<IUser>({
@@ -70,6 +65,7 @@ const UserSchema = new Schema<IUser>({
   lastName: { type: String, required: true, trim: true },
   phoneNumber: { type: String, required: true, unique: true, trim: true },
   role: { type: Schema.Types.ObjectId, ref: 'Role', required: true },
+  subscriptions: [{ type: Schema.Types.ObjectId, ref: 'Subscription' }],
   refreshTokens: { type: [String], default: [], select: false },
 
   // Profile fields
@@ -85,13 +81,16 @@ const UserSchema = new Schema<IUser>({
   emergencyContact: { type: EmergencyContactSchema, default: {} },
   bodyMeasurements: { type: BodyMeasurementsSchema, default: {} },
 
-  subscription: {
-    plan: { type: String },
-    startDate: { type: Date },
-    endDate: { type: Date },
-    isActive: { type: Boolean, default: false }
-  }
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+// Virtual for active subscription
+UserSchema.virtual('activeSubscription', {
+  ref: 'Subscription',
+  localField: 'subscriptions',
+  foreignField: '_id',
+  justOne: true,
+  match: { status: 'active' }
+});
 
 
 const User = model<IUser>('User', UserSchema);

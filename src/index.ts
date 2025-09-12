@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import config from './config';
 import connectDB from './database/connection';
-import v1Routes from './api/routes/v1';
+import v1Routes from './routes/v1';
 import { ApiError } from './utils/ApiError';
 
 const app = express();

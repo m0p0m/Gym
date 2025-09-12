@@ -3,6 +3,7 @@ import authRoutes from './auth.routes';
 import userRoutes from './user.routes';
 import workoutRoutes from './workout.routes';
 import dietRoutes from './diet.routes';
+import subscriptionRoutes from './subscription.routes';
 
 const router = Router();
 
@@ -22,6 +23,10 @@ const moduleRoutes = [
   {
     path: '/diets',
     route: dietRoutes,
+  },
+  {
+    path: '/subscriptions',
+    route: subscriptionRoutes,
   },
 ];
 

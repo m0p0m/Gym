@@ -32,7 +32,8 @@ const permissions = [
   { name: 'workouts:assign', description: 'Assign workouts to users' },
   { name: 'diets:create', description: 'Create diet plans' },
   { name: 'diets:assign', description: 'Assign diets to users' },
-  { name: 'subscriptions:update', description: 'Update user subscriptions' },
+  { name: 'subscriptions:create', description: 'Create subscription plans' },
+  { name: 'subscriptions:assign', description: 'Assign subscriptions to users' },
 ];
 
 const seedDatabase = async () => {
@@ -62,7 +63,7 @@ const seedDatabase = async () => {
       'users:create', 'users:read', 'users:update',
       'workouts:create', 'workouts:assign',
       'diets:create', 'diets:assign',
-      'subscriptions:update'
+      'subscriptions:create', 'subscriptions:assign'
     ].map(name => permissionMap.get(name))
   ];
 
