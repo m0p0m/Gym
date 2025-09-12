@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import { ApiError } from '../utils/ApiError';
-import Role from '../database/models/role.model';
-import { IPermission } from '../database/models/permission.model';
+import Role from '../models/role.model';
+import { IPermission } from '../models/permission.model';
 
 const hasPermission = (requiredPermission: string) => async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {

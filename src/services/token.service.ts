@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import config from '../../config';
-import { IUser } from '../user/user.model';
+import config from '../config';
+import { IUser } from '../models/user.model';
 
 export const tokenTypes = {
   ACCESS: 'access',

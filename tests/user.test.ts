@@ -1,9 +1,9 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import app from '../src/index';
-import OTP from '../src/modules/auth/otp.model';
-import User from '../src/modules/user/user.model';
-import Role from '../src/modules/role/role.model';
+import OTP from '../src/models/otp.model';
+import User from '../src/models/user.model';
+import Role from '../src/models/role.model';
 
 describe('User Profile Routes', () => {
   let token: string;

@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
-import User, { IUser } from './user.model';
-import { ApiError } from '../../utils/ApiError';
+import User, { IUser } from '../models/user.model';
+import { ApiError } from '../utils/ApiError';
 
 class UserService {
   /**

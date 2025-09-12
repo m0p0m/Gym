@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import authService from './auth.service';
-import tokenService from './token.service';
-import User from '../user/user.model';
-import { tokenTypes } from './token.service';
-import { ApiError } from '../../utils/ApiError';
-import catchAsync from '../../utils/catchAsync';
+import authService from '../services/auth.service';
+import tokenService, { tokenTypes } from '../services/token.service';
+import User from '../models/user.model';
+import { ApiError } from '../utils/ApiError';
+import catchAsync from '../utils/catchAsync';
 
 class AuthController {
   public sendOtp = catchAsync(async (req: Request, res: Response) => {

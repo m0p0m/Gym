@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import { ApiError } from '../utils/ApiError';
 import tokenService, { tokenTypes } from '../services/token.service';
-import User, { IUser } from '../database/models/user.model';
+import User, { IUser } from '../models/user.model';
 
 // Extend the Express Request interface to include the user property
 declare global {

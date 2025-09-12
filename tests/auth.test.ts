@@ -1,9 +1,9 @@
 import request from 'supertest';
 import httpStatus from 'http-status';
 import app from '../src/index';
-import OTP from '../src/database/models/otp.model';
-import User from '../src/database/models/user.model';
-import Role from '../src/database/models/role.model';
+import OTP from '../src/models/otp.model';
+import User from '../src/models/user.model';
+import Role from '../src/models/role.model';
 
 describe('Auth Routes (OTP Flow)', () => {
   const phoneNumber = '09121112233';
@@ -18,10 +18,10 @@ describe('Auth Routes (OTP Flow)', () => {
     await Role.create({ name: 'User', description: 'Test role', permissions: [] });
   });
 
-  describe('POST /api/auth/send-otp', () => {
+  describe('POST /api/v1/auth/send-otp', () => {
     it('should return 200 OK and send an OTP', async () => {
       const res = await request(app)
-        .post('/api/auth/send-otp')
+        .post('/api/v1/auth/send-otp')
         .send({ phoneNumber })
         .expect(httpStatus.OK);
 
@@ -34,7 +34,7 @@ describe('Auth Routes (OTP Flow)', () => {
     });
   });
 
-  describe('POST /api/auth/verify-otp', () => {
+  describe('POST /api/v1/auth/verify-otp', () => {
     beforeEach(async () => {
       // Create a valid OTP for testing verification
       const otpDoc = await OTP.create({ phoneNumber, otp: '1234' });
@@ -43,14 +43,14 @@ describe('Auth Routes (OTP Flow)', () => {
 
     it('should return 401 UNAUTHORIZED for an invalid OTP', async () => {
       await request(app)
-        .post('/api/auth/verify-otp')
+        .post('/api/v1/auth/verify-otp')
         .send({ phoneNumber, otp: '0000' })
         .expect(httpStatus.UNAUTHORIZED);
     });
 
     it('should create a new user if one does not exist and return tokens', async () => {
       const res = await request(app)
-        .post('/api/auth/verify-otp')
+        .post('/api/v1/auth/verify-otp')
         .send({ phoneNumber, otp: validOtp })
         .expect(httpStatus.OK);
 
@@ -69,7 +69,7 @@ describe('Auth Routes (OTP Flow)', () => {
       await User.create({ phoneNumber, firstName: 'Existing', lastName: 'User', role: userRole?._id });
 
       const res = await request(app)
-        .post('/api/auth/verify-otp')
+        .post('/api/v1/auth/verify-otp')
         .send({ phoneNumber, otp: validOtp })
         .expect(httpStatus.OK);
 
@@ -77,14 +77,14 @@ describe('Auth Routes (OTP Flow)', () => {
     });
   });
 
-  describe('POST /api/auth/refresh-token', () => {
+  describe('POST /api/v1/auth/refresh-token', () => {
     let refreshToken: string;
 
     beforeEach(async () => {
       // Create a user and log them in to get a refresh token
       const otpDoc = await OTP.create({ phoneNumber, otp: '1234' });
       const verifyRes = await request(app)
-        .post('/api/auth/verify-otp')
+        .post('/api/v1/auth/verify-otp')
         .send({ phoneNumber, otp: otpDoc.otp });
 
       refreshToken = verifyRes.body.tokens.refresh.token;
@@ -92,7 +92,7 @@ describe('Auth Routes (OTP Flow)', () => {
 
     it('should return new tokens for a valid refresh token', async () => {
       const res = await request(app)
-        .post('/api/auth/refresh-token')
+        .post('/api/v1/auth/refresh-token')
         .send({ refreshToken })
         .expect(httpStatus.OK);
 
@@ -102,7 +102,7 @@ describe('Auth Routes (OTP Flow)', () => {
 
     it('should return 401 UNAUTHORIZED for an invalid refresh token', async () => {
       await request(app)
-        .post('/api/auth/refresh-token')
+        .post('/api/v1/auth/refresh-token')
         .send({ refreshToken: 'invalidtoken' })
         .expect(httpStatus.UNAUTHORIZED);
     });

@@ -1,8 +1,8 @@
 import httpStatus from 'http-status';
-import User from '../user/user.model';
-import Role from '../role/role.model';
-import OTP from './otp.model';
-import { ApiError } from '../../utils/ApiError';
+import User from '../models/user.model';
+import Role from '../models/role.model';
+import OTP from '../models/otp.model';
+import { ApiError } from '../utils/ApiError';
 
 class AuthService {
   /**
