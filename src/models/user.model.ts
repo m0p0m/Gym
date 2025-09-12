@@ -1,6 +1,28 @@
 import { Schema, model, Document } from 'mongoose';
 import { IRole } from './role.model';
 
+// Nested Schemas for better organization
+const MedicalInfoSchema = new Schema({
+  conditions: { type: [String], default: [] },
+  allergies: { type: [String], default: [] },
+  notes: { type: String, trim: true },
+}, { _id: false });
+
+const EmergencyContactSchema = new Schema({
+  name: { type: String, trim: true },
+  relationship: { type: String, trim: true },
+  phoneNumber: { type: String, trim: true },
+}, { _id: false });
+
+const BodyMeasurementsSchema = new Schema({
+  bodyFatPercentage: { type: Number },
+  neck: { type: Number },
+  chest: { type: Number },
+  waist: { type: Number },
+  hips: { type: Number },
+}, { _id: false });
+
+
 export interface IUser extends Document {
   firstName: string;
   lastName: string;
@@ -8,13 +30,32 @@ export interface IUser extends Document {
   role: IRole['_id'];
   refreshTokens?: string[];
 
-  // Profile fields
+  // --- Profile fields ---
   height?: number; // in cm
   weight?: number; // in kg
   gender?: 'male' | 'female' | 'other';
   birthDate?: Date;
   profilePictureUrl?: string;
   goals?: string[];
+
+  // Nested profile info
+  medicalInfo?: {
+    conditions?: string[];
+    allergies?: string[];
+    notes?: string;
+  };
+  emergencyContact?: {
+    name?: string;
+    relationship?: string;
+    phoneNumber?: string;
+  };
+  bodyMeasurements?: {
+    bodyFatPercentage?: number;
+    neck?: number;
+    chest?: number;
+    waist?: number;
+    hips?: number;
+  };
 
   subscription?: {
     plan: string;
@@ -38,6 +79,11 @@ const UserSchema = new Schema<IUser>({
   birthDate: { type: Date },
   profilePictureUrl: { type: String, trim: true },
   goals: { type: [String], default: [] },
+
+  // Nested profile info
+  medicalInfo: { type: MedicalInfoSchema, default: {} },
+  emergencyContact: { type: EmergencyContactSchema, default: {} },
+  bodyMeasurements: { type: BodyMeasurementsSchema, default: {} },
 
   subscription: {
     plan: { type: String },

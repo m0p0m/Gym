@@ -80,5 +80,28 @@ describe('User Profile Routes', () => {
       const dbUser = await User.findOne({ phoneNumber });
       expect(dbUser?.firstName).toBe('Jules');
     });
+
+    it('should return 200 OK and update nested profile fields', async () => {
+      const nestedUpdate = {
+        medicalInfo: {
+          notes: 'User is recovering from a knee injury.',
+        },
+        bodyMeasurements: {
+          waist: 85,
+        },
+      };
+
+      const res = await request(app)
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${token}`)
+        .send(nestedUpdate)
+        .expect(httpStatus.OK);
+
+      expect(res.body.medicalInfo.notes).toBe('User is recovering from a knee injury.');
+      expect(res.body.bodyMeasurements.waist).toBe(85);
+
+      const dbUser = await User.findOne({ phoneNumber });
+      expect(dbUser?.medicalInfo?.notes).toBe('User is recovering from a knee injury.');
+    });
   });
 });

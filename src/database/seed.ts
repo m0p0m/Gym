@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import config from '../config';
-import Permission, { IPermission } from './models/permission.model';
-import Role from './models/role.model';
-import User from './models/user.model';
+import Permission, { IPermission } from '../models/permission.model';
+import Role from '../models/role.model';
+import User from '../models/user.model';
 
 const permissions = [
   // User Management
@@ -28,6 +28,7 @@ const permissions = [
   { name: 'diets:update_own', description: 'Update own diet tasks (e.g., mark as done)' },
 
   // Trainer/Admin specific
+  { name: 'workouts:create', description: 'Create workout plans' },
   { name: 'workouts:assign', description: 'Assign workouts to users' },
   { name: 'diets:assign', description: 'Assign diets to users' },
   { name: 'subscriptions:update', description: 'Update user subscriptions' },
@@ -56,7 +57,7 @@ const seedDatabase = async () => {
 
   const adminPermissions = [
     ...userPermissions,
-    ...['users:create', 'users:read', 'users:update', 'workouts:assign', 'diets:assign', 'subscriptions:update']
+    ...['users:create', 'users:read', 'users:update', 'workouts:create', 'workouts:assign', 'diets:assign', 'subscriptions:update']
     .map(name => permissionMap.get(name))
   ];
 

@@ -30,6 +30,20 @@ Retrieves the complete profile of the currently authenticated user.
     "birthDate": "1990-01-01T00:00:00.000Z",
     "profilePictureUrl": "https://example.com/avatar.jpg",
     "goals": ["weight_loss"],
+    "medicalInfo": {
+      "conditions": ["Asthma"],
+      "allergies": ["Peanuts"],
+      "notes": "User is recovering from a knee injury."
+    },
+    "emergencyContact": {
+      "name": "Jane Doe",
+      "relationship": "Spouse",
+      "phoneNumber": "09129876543"
+    },
+    "bodyMeasurements": {
+      "bodyFatPercentage": 15.5,
+      "waist": 85
+    },
     "createdAt": "2023-01-01T12:00:00.000Z",
     "updatedAt": "2023-01-01T12:30:00.000Z"
   }
@@ -63,12 +77,18 @@ All fields are optional.
 | `birthDate`   | Date     | ISO 8601 date string.            |
 | `profilePictureUrl`| String | A URL to the user's avatar.    |
 | `goals`       | [String] | An array of fitness goals.       |
+| `medicalInfo` | Object   | Object with medical details.     |
+| `emergencyContact`| Object | Object with emergency contact details. |
+| `bodyMeasurements`| Object | Object with body measurements. |
 
 **Example:**
 ```json
 {
   "firstName": "Jules",
-  "goals": ["muscle_gain", "endurance"]
+  "goals": ["muscle_gain", "endurance"],
+  "medicalInfo": {
+    "notes": "Knee feels better now."
+  }
 }
 ```
 
