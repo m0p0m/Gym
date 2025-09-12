@@ -1,22 +1,28 @@
 import Joi from 'joi';
 
-const register = {
+const sendOtp = {
   body: Joi.object().keys({
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    phoneNumber: Joi.string().required().pattern(/^[0-9]{11}$/), // Basic validation for an 11-digit phone number
-    password: Joi.string().required().min(8),
+    // Basic validation for an 11-digit Iranian phone number
+    phoneNumber: Joi.string().required().pattern(/^09[0-9]{9}$/),
   }),
 };
 
-const login = {
+const verifyOtp = {
   body: Joi.object().keys({
-    phoneNumber: Joi.string().required(),
-    password: Joi.string().required(),
+    phoneNumber: Joi.string().required().pattern(/^09[0-9]{9}$/),
+    otp: Joi.string().required().length(4),
   }),
 };
+
+const refreshToken = {
+  body: Joi.object().keys({
+    refreshToken: Joi.string().required(),
+  }),
+};
+
 
 export default {
-  register,
-  login,
+  sendOtp,
+  verifyOtp,
+  refreshToken,
 };

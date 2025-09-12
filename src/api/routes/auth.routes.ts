@@ -5,7 +5,8 @@ import validate from '../../middlewares/validate';
 
 const router = Router();
 
-router.post('/register', validate({ body: authValidation.register.body }), authController.register);
-router.post('/login', validate({ body: authValidation.login.body }), authController.login);
+router.post('/send-otp', validate({ body: authValidation.sendOtp.body }), authController.sendOtp);
+router.post('/verify-otp', validate({ body: authValidation.verifyOtp.body }), authController.verifyOtp);
+router.post('/refresh-token', validate({ body: authValidation.refreshToken.body }), authController.refreshToken);
 
 export default router;

@@ -91,7 +91,6 @@ const seedDatabase = async () => {
       firstName: 'Super',
       lastName: 'Admin',
       phoneNumber: superAdminPhoneNumber,
-      password: 'supersecretpassword', // Remember to change this!
       role: superAdminRole._id,
     });
     console.log('Created default Super Admin user.');
