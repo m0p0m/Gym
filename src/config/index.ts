@@ -7,7 +7,8 @@ const config = {
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 3000,
   databaseUrl: process.env.DATABASE_URL || 'mongodb://localhost:27017/gym-management',
-  jwtSecret: process.env.JWT_SECRET || 'a-very-secret-key'
+  jwtSecret: process.env.JWT_SECRET || 'a-very-secret-key',
+  apiKey: process.env.API_KEY || 'a-very-secret-api-key', // A default for development
 };
 
 export default config;

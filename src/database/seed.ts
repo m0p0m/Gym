@@ -38,6 +38,7 @@ const permissions = [
   { name: 'products:create', description: 'Create products' },
   { name: 'products:update', description: 'Update products' },
   { name: 'products:delete', description: 'Delete products' },
+  { name: 'attendance:read_all', description: 'Read all attendance records' },
 ];
 
 const seedDatabase = async () => {
@@ -70,7 +71,8 @@ const seedDatabase = async () => {
       'workouts:create', 'workouts:assign',
       'diets:create', 'diets:assign',
       'subscriptions:create', 'subscriptions:assign',
-      'products:create', 'products:update', 'products:delete'
+      'products:create', 'products:update', 'products:delete',
+      'attendance:read_all'
     ].map(name => permissionMap.get(name))
   ];
 
