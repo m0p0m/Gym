@@ -9,6 +9,7 @@ import cartRoutes from './cart.routes';
 import orderRoutes from './order.routes';
 import attendanceRoutes from './attendance.routes';
 import dashboardRoutes from './dashboard.routes';
+import paymentRoutes from './payment.routes';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ const moduleRoutes = [
   { path: '/orders', route: orderRoutes },
   { path: '/attendance', route: attendanceRoutes },
   { path: '/dashboard', route: dashboardRoutes },
+  { path: '/payments', route: paymentRoutes },
 ];
 
 moduleRoutes.forEach((route) => {

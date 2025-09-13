@@ -13,7 +13,7 @@ export interface IOrder extends Document {
   user: IUser['_id'];
   items: IOrderItem[];
   totalAmount: number;
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
   shippingAddress: {
     street: string;
     city: string;
@@ -34,7 +34,7 @@ const OrderSchema = new Schema<IOrder>({
   totalAmount: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['pending', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
     default: 'pending',
     index: true,
   },
