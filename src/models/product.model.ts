@@ -22,6 +22,8 @@ const ProductSchema = new Schema<IProduct>({
   isAvailable: { type: Boolean, default: true, index: true },
 }, { timestamps: true });
 
+ProductSchema.index({ name: 'text', description: 'text' });
+
 const Product = model<IProduct>('Product', ProductSchema);
 
 export default Product;

@@ -50,14 +50,51 @@ describe('Product Routes', () => {
   });
 
   describe('GET /api/v1/products', () => {
-    it('should return a list of products', async () => {
-      await Product.create(productPayload);
+    beforeEach(async () => {
+      // Create a variety of products for filtering tests
+      await Product.insertMany([
+        { name: 'Whey Protein', description: 'A supplement for muscle growth', price: 50, category: 'Protein', brand: 'GymBrand' },
+        { name: 'Creatine Monohydrate', description: 'A supplement for strength', price: 25, category: 'Performance', brand: 'GymBrand' },
+        { name: 'Pre-Workout Fuel', description: 'Energy supplement', price: 35, category: 'Performance', brand: 'OtherBrand' },
+      ]);
+    });
+
+    it('should return all products if no filter is specified', async () => {
       const res = await request(app)
         .get('/api/v1/products')
         .expect(httpStatus.OK);
+      expect(res.body.products).toHaveLength(3);
+    });
 
+    it('should filter products by category', async () => {
+      const res = await request(app)
+        .get('/api/v1/products?category=Performance')
+        .expect(httpStatus.OK);
+      expect(res.body.products).toHaveLength(2);
+      expect(res.body.products.every((p: any) => p.category === 'Performance')).toBe(true);
+    });
+
+    it('should filter products by brand', async () => {
+      const res = await request(app)
+        .get('/api/v1/products?brand=GymBrand')
+        .expect(httpStatus.OK);
+      expect(res.body.products).toHaveLength(2);
+      expect(res.body.products.every((p: any) => p.brand === 'GymBrand')).toBe(true);
+    });
+
+    it('should filter by price range', async () => {
+      const res = await request(app)
+        .get('/api/v1/products?minPrice=30&maxPrice=40')
+        .expect(httpStatus.OK);
       expect(res.body.products).toHaveLength(1);
-      expect(res.body.products[0].name).toBe(productPayload.name);
+      expect(res.body.products[0].name).toBe('Pre-Workout Fuel');
+    });
+
+    it('should perform a text search on name and description', async () => {
+      const res = await request(app)
+        .get('/api/v1/products?search=supplement')
+        .expect(httpStatus.OK);
+      expect(res.body.products).toHaveLength(2); // Whey and Creatine
     });
   });
 });

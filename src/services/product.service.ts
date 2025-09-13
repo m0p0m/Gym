@@ -20,15 +20,34 @@ class ProductService {
   }
 
   /**
-   * Query for products with pagination
-   * @param {object} filter - Mongo filter
-   * @param {IQueryOptions} options - Query options
+   * Query for products with pagination and filtering
+   * @param {any} query - Express query object
    * @returns {Promise<any>}
    */
-  public async queryProducts(filter: object, options: IQueryOptions): Promise<any> {
-    const limit = options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10;
-    const page = options.page && parseInt(options.page.toString(), 10) > 0 ? parseInt(options.page.toString(), 10) : 1;
-    const sort = options.sortBy || 'createdAt:desc';
+  public async queryProducts(query: any): Promise<any> {
+    const filter: any = {};
+    if (query.search) {
+      filter.$text = { $search: query.search };
+    }
+    if (query.category) {
+      filter.category = query.category;
+    }
+    if (query.brand) {
+      filter.brand = query.brand;
+    }
+    if (query.minPrice || query.maxPrice) {
+      filter.price = {};
+      if (query.minPrice) {
+        filter.price.$gte = parseFloat(query.minPrice);
+      }
+      if (query.maxPrice) {
+        filter.price.$lte = parseFloat(query.maxPrice);
+      }
+    }
+
+    const limit = query.limit && parseInt(query.limit.toString(), 10) > 0 ? parseInt(query.limit.toString(), 10) : 10;
+    const page = query.page && parseInt(query.page.toString(), 10) > 0 ? parseInt(query.page.toString(), 10) : 1;
+    const sort = query.sortBy || 'createdAt:desc';
 
     const products = await Product.find(filter)
       .sort(sort.replace(':', ' '))

@@ -34,11 +34,16 @@ Creates a new product in the store.
 
 ## `GET /api/v1/products`
 
-Retrieves a list of all available products. Supports pagination.
+Retrieves a list of all available products. Supports filtering, searching, sorting, and pagination.
 
 ### Query Parameters
 | Parameter | Type   | Description                               | Default |
 |-----------|--------|-------------------------------------------|---------|
+| `search`  | String | Text search term (searches name and description). |         |
+| `category`| String | Filter by product category.               |         |
+| `brand`   | String | Filter by product brand.                  |         |
+| `minPrice`| Number | Minimum price filter.                     |         |
+| `maxPrice`| Number | Maximum price filter.                     |         |
 | `limit`   | Number | Maximum number of products to return.     | 10      |
 | `page`    | Number | The page number for pagination.           | 1       |
 | `sortBy`  | String | Sort order (e.g., `createdAt:desc`).      | `createdAt:desc` |

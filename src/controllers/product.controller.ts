@@ -11,13 +11,7 @@ class ProductController {
   });
 
   public getProducts = catchAsync(async (req: Request, res: Response) => {
-    const filter = {}; // Build filter from req.query if needed
-    const options = {
-      limit: req.query.limit ? Number(req.query.limit) : 10,
-      page: req.query.page ? Number(req.query.page) : 1,
-      sortBy: req.query.sortBy ? req.query.sortBy.toString() : undefined,
-    };
-    const result = await productService.queryProducts(filter, options);
+    const result = await productService.queryProducts(req.query);
     res.status(httpStatus.OK).send(result);
   });
 
