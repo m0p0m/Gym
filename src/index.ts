@@ -1,6 +1,12 @@
 import express, { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import compression from 'compression';
+import cors from 'cors';
+import morgan from 'morgan';
 import config from './config';
+import logger from './config/logger';
 import connectDB from './database/connection';
 import v1Routes from './routes/v1';
 import { ApiError } from './utils/ApiError';
@@ -8,12 +14,30 @@ import { ApiError } from './utils/ApiError';
 const app = express();
 const port = config.port;
 
+// Set security HTTP headers
+app.use(helmet());
+
+// Logging
+if (config.env !== 'test') {
+  app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
+}
+
 // Connect to Database
 connectDB();
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Sanitize request data
+app.use(mongoSanitize());
+
+// Gzip compression
+app.use(compression());
+
+// Enable cors
+app.use(cors());
+app.options('*', cors());
 
 // v1 API Routes
 app.use('/api/v1', v1Routes);
@@ -37,6 +61,9 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 // handle error
 app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
   const { statusCode, message } = err;
+  if (config.env === 'development') {
+    logger.error(err);
+  }
   res.status(statusCode).send({
     code: statusCode,
     message,
@@ -47,7 +74,7 @@ app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  logger.info(`Server is running on http://localhost:${port}`);
 });
 
 export default app; // Export for testing purposes
