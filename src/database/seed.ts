@@ -22,6 +22,7 @@ const permissions = [
   { name: 'profile:read_own', description: 'Read own user profile' },
   { name: 'profile:update_own', description: 'Update own user profile' },
   { name: 'subscription:read_own', description: 'Read own subscription status' },
+  { name: 'orders:read_own', description: 'Read own orders' },
   { name: 'workouts:read_own', description: 'Read own workout plans' },
   { name: 'workouts:update_own', description: 'Update own workout tasks (e.g., mark as done)' },
   { name: 'diets:read_own', description: 'Read own diet plans' },
@@ -34,6 +35,9 @@ const permissions = [
   { name: 'diets:assign', description: 'Assign diets to users' },
   { name: 'subscriptions:create', description: 'Create subscription plans' },
   { name: 'subscriptions:assign', description: 'Assign subscriptions to users' },
+  { name: 'products:create', description: 'Create products' },
+  { name: 'products:update', description: 'Update products' },
+  { name: 'products:delete', description: 'Delete products' },
 ];
 
 const seedDatabase = async () => {
@@ -53,8 +57,10 @@ const seedDatabase = async () => {
 
   // Create Roles
   const userPermissions = [
-    'profile:read_own', 'profile:update_own', 'subscription:read_own',
-    'workouts:read_own', 'workouts:update_own', 'diets:read_own', 'diets:update_own'
+    'profile:read_own', 'profile:update_own',
+    'subscription:read_own', 'orders:read_own',
+    'workouts:read_own', 'workouts:update_own',
+    'diets:read_own', 'diets:update_own'
   ].map(name => permissionMap.get(name));
 
   const adminPermissions = [
@@ -63,7 +69,8 @@ const seedDatabase = async () => {
       'users:create', 'users:read', 'users:update',
       'workouts:create', 'workouts:assign',
       'diets:create', 'diets:assign',
-      'subscriptions:create', 'subscriptions:assign'
+      'subscriptions:create', 'subscriptions:assign',
+      'products:create', 'products:update', 'products:delete'
     ].map(name => permissionMap.get(name))
   ];
 
