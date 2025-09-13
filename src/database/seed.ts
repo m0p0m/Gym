@@ -39,6 +39,7 @@ const permissions = [
   { name: 'products:update', description: 'Update products' },
   { name: 'products:delete', description: 'Delete products' },
   { name: 'attendance:read_all', description: 'Read all attendance records' },
+  { name: 'dashboard:read', description: 'Access to admin dashboard and analytics' },
 ];
 
 const seedDatabase = async () => {
@@ -72,7 +73,8 @@ const seedDatabase = async () => {
       'diets:create', 'diets:assign',
       'subscriptions:create', 'subscriptions:assign',
       'products:create', 'products:update', 'products:delete',
-      'attendance:read_all'
+      'attendance:read_all',
+      'dashboard:read'
     ].map(name => permissionMap.get(name))
   ];
 
