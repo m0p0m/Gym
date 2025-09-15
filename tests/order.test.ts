@@ -21,7 +21,7 @@ describe('Order Routes', () => {
     await Cart.deleteMany({});
     await Order.deleteMany({});
 
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
     user = await User.create({ phoneNumber: '09129876543', role: userRole._id, firstName: 'Order', lastName: 'User' });
     const otp = await OTP.create({ phoneNumber: '09129876543', otp: '1234' });
     const res = await request(app).post('/api/v1/auth/verify-otp').send({ phoneNumber: '09129876543', otp: otp.otp });

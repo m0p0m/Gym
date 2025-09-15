@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import app from '../src/index';
 import User from '../src/models/user.model';
 import Role from '../src/models/role.model';
+import Permission from '../src/models/permission.model';
 import OTP from '../src/models/otp.model';
 import DietPlan from '../src/models/dietPlan.model';
 
@@ -33,11 +34,11 @@ describe('Diet Routes', () => {
     await OTP.deleteMany({});
     await DietPlan.deleteMany({});
 
-    const dietPermissions = await Role.create(
+    const dietPermissions = await Permission.insertMany([
       { name: 'diets:create', description: 'desc' },
       { name: 'diets:assign', description: 'desc' }
-    );
-    const trainerRole = await Role.create({ name: 'Nutritionist', permissions: dietPermissions.map(p => p._id) });
+    ]);
+    const trainerRole = await Role.create({ name: 'Nutritionist', description: 'desc', permissions: dietPermissions.map(p => p._id) });
 
     trainer = await User.create({ phoneNumber: '09121234567', role: trainerRole._id, firstName: 'Diet', lastName: 'Trainer' });
     const otpTrainer = await OTP.create({ phoneNumber: '09121234567', otp: '1234' });

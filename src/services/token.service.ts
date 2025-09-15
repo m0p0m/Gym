@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import config from '../config';
 import { IUser } from '../models/user.model';
 
@@ -13,7 +13,7 @@ class TokenService {
    */
   generateToken(
     userId: IUser['_id'],
-    expiresIn: string,
+    expiresIn: string | number,
     type: string,
     secret: string = config.jwtSecret
   ): string {
@@ -22,7 +22,8 @@ class TokenService {
       iat: Math.floor(Date.now() / 1000),
       type,
     };
-    return jwt.sign(payload, secret, { expiresIn });
+    const options: SignOptions = { expiresIn: expiresIn as any };
+    return jwt.sign(payload, secret, options);
   }
 
   /**

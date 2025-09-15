@@ -17,8 +17,8 @@ describe('Notification Routes', () => {
     await OTP.deleteMany({});
     await Notification.deleteMany({});
 
-    const userRole = await Role.create({ name: 'User', permissions: [] });
-    user = await User.create({ phoneNumber: '0912NOTIF11', role: userRole._id });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
+    user = await User.create({ phoneNumber: '0912NOTIF11', role: userRole._id, firstName: 'Notif', lastName: 'User' });
     const otp = await OTP.create({ phoneNumber: '0912NOTIF11', otp: '1234' });
     const res = await request(app).post('/api/v1/auth/verify-otp').send({ phoneNumber: '0912NOTIF11', otp: otp.otp });
     userToken = res.body.tokens.access.token;

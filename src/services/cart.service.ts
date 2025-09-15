@@ -36,7 +36,7 @@ class CartService {
     }
 
     const cart = await this.getOrCreateCart(userId);
-    const existingItemIndex = cart.items.findIndex(item => item.product.equals(productId));
+    const existingItemIndex = cart.items.findIndex(item => (item.product as any).equals(productId));
 
     if (existingItemIndex > -1) {
       // Update quantity

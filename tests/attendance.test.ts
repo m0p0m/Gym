@@ -18,7 +18,7 @@ describe('Attendance Routes', () => {
     await OTP.deleteMany({});
     await Attendance.deleteMany({});
 
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
     user = await User.create({ phoneNumber: '0912ATTEND1', role: userRole._id, firstName: 'Att', lastName: 'User' });
     const otp = await OTP.create({ phoneNumber: '0912ATTEND1', otp: '1234' });
     const res = await request(app).post('/api/v1/auth/verify-otp').send({ phoneNumber: '0912ATTEND1', otp: otp.otp });

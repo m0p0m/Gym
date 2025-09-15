@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import analyticsController from '../../../controllers/analytics.controller';
-import auth from '../../../middlewares/auth.middleware';
-import hasPermission from '../../../middlewares/permission.middleware';
+import analyticsController from '../../controllers/analytics.controller';
+import auth from '../../middlewares/auth.middleware';
+import hasPermission from '../../middlewares/permission.middleware';
 
 const router = Router();
 

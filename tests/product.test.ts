@@ -31,7 +31,7 @@ describe('Product Routes', () => {
       { name: 'products:update', description: 'desc' },
       { name: 'products:delete', description: 'desc' },
     ]);
-    const adminRole = await Role.create({ name: 'Admin', permissions: adminPermissions.map(p => p._id) });
+    const adminRole = await Role.create({ name: 'Admin', description: 'desc', permissions: adminPermissions.map(p => p._id) });
 
     adminUser = await User.create({ phoneNumber: '0912ADMINPROD', role: adminRole._id, firstName: 'Prod', lastName: 'Admin' });
     const otpAdmin = await OTP.create({ phoneNumber: '0912ADMINPROD', otp: '1234' });

@@ -41,7 +41,7 @@ describe('Payment Routes', () => {
     await Order.deleteMany({});
     await Transaction.deleteMany({});
 
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
     user = await User.create({ phoneNumber: '0912PAYMENT1', role: userRole._id });
     const otp = await OTP.create({ phoneNumber: '0912PAYMENT1', otp: '1234' });
     const res = await request(app).post('/api/v1/auth/verify-otp').send({ phoneNumber: '0912PAYMENT1', otp: otp.otp });

@@ -103,7 +103,7 @@ class WorkoutService {
    * @param {string} notes
    * @returns {Promise<any>}
    */
-  public async completeWorkoutDay(userId: IUser['_id'], dayId: IWorkoutDay['_id'], notes?: string) {
+  public async completeWorkoutDay(userId: any, dayId: any, notes?: string) {
     const session = await UserWorkoutSession.findOne({ user: userId, isActive: true })
       .populate('user')
       .populate({
@@ -116,7 +116,7 @@ class WorkoutService {
     }
 
     // Check if the day has already been completed to avoid duplicates
-    const alreadyCompleted = session.completedDays.some(d => d.dayId.equals(dayId));
+    const alreadyCompleted = session.completedDays.some(d => (d.dayId as any).equals(dayId));
     if (alreadyCompleted) {
       // Or maybe update the existing one? For now, let's throw an error.
       throw new ApiError(httpStatus.BAD_REQUEST, 'This workout day has already been marked as complete.');

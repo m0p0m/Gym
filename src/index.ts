@@ -37,7 +37,7 @@ app.use(compression());
 
 // Enable cors
 app.use(cors());
-app.options('*', cors());
+app.options(/.*/, cors());
 
 // v1 API Routes
 app.use('/api/v1', v1Routes);
@@ -52,7 +52,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
+    const message = error.message || (httpStatus as any)[statusCode];
     error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);

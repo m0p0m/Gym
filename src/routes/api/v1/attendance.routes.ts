@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import attendanceController from '../../../controllers/attendance.controller';
-import attendanceValidation from '../../../validations/attendance.validation';
-import auth from '../../../middlewares/auth.middleware';
-import apiKeyAuth from '../../../middlewares/apiKey.middleware';
-import validate from '../../../middlewares/validate';
+import attendanceController from '../../controllers/attendance.controller';
+import attendanceValidation from '../../validations/attendance.validation';
+import auth from '../../middlewares/auth.middleware';
+import apiKeyAuth from '../../middlewares/apiKey.middleware';
+import validate from '../../middlewares/validate';
 
 const router = Router();
 

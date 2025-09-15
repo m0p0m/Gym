@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import productController from '../../../controllers/product.controller';
-import productValidation from '../../../validations/product.validation';
-import auth from '../../../middlewares/auth.middleware';
-import hasPermission from '../../../middlewares/permission.middleware';
-import validate from '../../../middlewares/validate';
+import productController from '../../controllers/product.controller';
+import productValidation from '../../validations/product.validation';
+import auth from '../../middlewares/auth.middleware';
+import hasPermission from '../../middlewares/permission.middleware';
+import validate from '../../middlewares/validate';
 
 const router = Router();
 

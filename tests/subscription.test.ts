@@ -29,8 +29,8 @@ describe('Subscription Routes', () => {
       { name: 'subscriptions:create', description: 'desc' },
       { name: 'subscriptions:assign', description: 'desc' }
     ]);
-    const adminRole = await Role.create({ name: 'Admin', permissions: adminPermissions.map(p => p._id) });
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const adminRole = await Role.create({ name: 'Admin', description: 'desc', permissions: adminPermissions.map(p => p._id) });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
 
     // Create and login admin
     adminUser = await User.create({ phoneNumber: '0912ADMIN11', role: adminRole._id, firstName: 'Test', lastName: 'Admin' });

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import subscriptionController from '../../../controllers/subscription.controller';
-import subscriptionValidation from '../../../validations/subscription.validation';
-import auth from '../../../middlewares/auth.middleware';
-import hasPermission from '../../../middlewares/permission.middleware';
-import validate from '../../../middlewares/validate';
+import subscriptionController from '../../controllers/subscription.controller';
+import subscriptionValidation from '../../validations/subscription.validation';
+import auth from '../../middlewares/auth.middleware';
+import hasPermission from '../../middlewares/permission.middleware';
+import validate from '../../middlewares/validate';
 
 const router = Router();
 

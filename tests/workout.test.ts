@@ -40,8 +40,8 @@ describe('Workout Routes', () => {
       { name: 'workouts:create', description: 'desc' },
       { name: 'workouts:assign', description: 'desc' }
     ]);
-    const trainerRole = await Role.create({ name: 'Trainer', permissions: permissions.map(p => p._id) });
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const trainerRole = await Role.create({ name: 'Trainer', description: 'desc', permissions: permissions.map(p => p._id) });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
 
     // Create and login trainer
     trainer = await User.create({ phoneNumber: '09120001111', role: trainerRole._id, firstName: 'Test', lastName: 'Trainer' });
@@ -99,7 +99,7 @@ describe('Workout Routes', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(httpStatus.OK);
 
-      expect(res.body.plan._id).toBe(plan._id.toString());
+      expect((res.body.plan as any)._id).toBe((plan as any)._id.toString());
     });
   });
 
@@ -116,7 +116,7 @@ describe('Workout Routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body.completedDays).toHaveLength(1);
-      expect(res.body.completedDays[0].dayId).toBe(day._id.toString());
+      expect((res.body.completedDays[0] as any).dayId).toBe((day as any)._id.toString());
       expect(res.body.completedDays[0].notes).toBe('Felt strong today.');
     });
   });

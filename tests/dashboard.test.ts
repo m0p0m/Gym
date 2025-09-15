@@ -24,13 +24,13 @@ describe('Dashboard Routes', () => {
     const adminPermissions = await Permission.insertMany([
       { name: 'dashboard:read', description: 'desc' },
     ]);
-    const adminRole = await Role.create({ name: 'Admin', permissions: adminPermissions.map(p => p._id) });
-    const userRole = await Role.create({ name: 'User', permissions: [] });
+    const adminRole = await Role.create({ name: 'Admin', description: 'desc', permissions: adminPermissions.map(p => p._id) });
+    const userRole = await Role.create({ name: 'User', description: 'desc', permissions: [] });
 
     // Create users
-    const adminUser = await User.create({ phoneNumber: '0912ADMIN DASH', role: adminRole._id });
-    await User.create({ phoneNumber: '0912USERDASH1', role: userRole._id });
-    await User.create({ phoneNumber: '0912USERDASH2', role: userRole._id });
+    const adminUser = await User.create({ phoneNumber: '0912ADMIN DASH', role: adminRole._id, firstName: 'Dash', lastName: 'Admin' });
+    await User.create({ phoneNumber: '0912USERDASH1', role: userRole._id, firstName: 'Dash', lastName: 'User1' });
+    await User.create({ phoneNumber: '0912USERDASH2', role: userRole._id, firstName: 'Dash', lastName: 'User2' });
 
     // Create subscriptions
     await Subscription.create({ user: adminUser._id, status: 'active', plan: new Role()._id, startDate: new Date(), endDate: new Date() });
