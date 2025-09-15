@@ -5,6 +5,7 @@ import config from '../config';
 import Order from '../models/order.model';
 import Transaction from '../models/transaction.model';
 import { IUser } from '../models/user.model';
+import notificationService from './notification.service';
 
 const zarinpal = new ZarinPal(config.zarinpalMerchantId, {
   sandbox: config.env === 'development', // Use sandbox in development
@@ -76,7 +77,16 @@ class PaymentService {
       await transaction.save();
 
       // Update the order status
-      await Order.updateOne({ _id: transaction.order }, { status: 'paid' }); // Or 'processing'
+      await Order.updateOne({ _id: transaction.order }, { status: 'paid' });
+
+      // Create a notification for the user
+      await notificationService.createNotification(
+        transaction.user,
+        'Payment Successful',
+        `Your payment of ${transaction.amount} for order #${transaction.order} was successful.`,
+        'order_success',
+        `/orders/${transaction.order}`
+      );
 
       return { message: 'Payment verified successfully', transaction };
     }

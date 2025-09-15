@@ -5,6 +5,7 @@ import WorkoutDay, { IWorkoutDay } from '../models/workoutDay.model';
 import WorkoutExercise from '../models/workoutExercise.model';
 import UserWorkoutSession from '../models/userWorkoutSession.model';
 import { IUser } from '../models/user.model';
+import notificationService from './notification.service';
 
 // This is a complex DTO (Data Transfer Object) for creating a full plan
 interface FullWorkoutPlanDto {
@@ -103,7 +104,13 @@ class WorkoutService {
    * @returns {Promise<any>}
    */
   public async completeWorkoutDay(userId: IUser['_id'], dayId: IWorkoutDay['_id'], notes?: string) {
-    const session = await UserWorkoutSession.findOne({ user: userId, isActive: true });
+    const session = await UserWorkoutSession.findOne({ user: userId, isActive: true })
+      .populate('user')
+      .populate({
+        path: 'plan',
+        select: 'trainer',
+      });
+
     if (!session) {
       throw new ApiError(httpStatus.NOT_FOUND, 'No active workout session found');
     }
@@ -117,6 +124,20 @@ class WorkoutService {
 
     session.completedDays.push({ dayId, notes, dateCompleted: new Date() });
     await session.save();
+
+    // Send notification to the trainer
+    const user = session.user as IUser;
+    const plan = session.plan as IWorkoutPlan;
+    if (plan.trainer) {
+      await notificationService.createNotification(
+        plan.trainer,
+        'Workout Completed',
+        `${user.firstName} ${user.lastName} has completed a workout day.`,
+        'workout_completed',
+        `/users/${user._id}/progress` // Example link
+      );
+    }
+
     return session;
   }
 }
