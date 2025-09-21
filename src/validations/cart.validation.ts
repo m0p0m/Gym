@@ -15,6 +15,23 @@ const addItem = {
   }),
 };
 
+const updateItem = {
+  params: Joi.object().keys({
+    itemId: objectId.required(),
+  }),
+  body: Joi.object().keys({
+    quantity: Joi.number().integer().min(1).required(),
+  }),
+};
+
+const removeItem = {
+  params: Joi.object().keys({
+    itemId: objectId.required(),
+  }),
+};
+
 export default {
   addItem,
+  updateItem,
+  removeItem,
 };

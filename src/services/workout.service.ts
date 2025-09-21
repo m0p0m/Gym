@@ -67,10 +67,15 @@ class WorkoutService {
     if (!plan) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Workout plan not found');
     }
-    // In a real app, you might want to deactivate previous plans for the user.
+
+    // Deactivate all other active workout sessions for this user
+    await UserWorkoutSession.updateMany({ user: userId, isActive: true }, { $set: { isActive: false } });
+
+    // Create a new active session for the assigned plan
     const session = await UserWorkoutSession.create({
       user: userId,
       plan: planId,
+      isActive: true, // Explicitly set to true
     });
     return session;
   }
@@ -115,14 +120,22 @@ class WorkoutService {
       throw new ApiError(httpStatus.NOT_FOUND, 'No active workout session found');
     }
 
+    // **Authorization Check**: Ensure the day belongs to the user's active plan
+    const workoutDay = await WorkoutDay.findById(dayId);
+    if (!workoutDay || workoutDay.plan.toString() !== (session.plan as any)._id.toString()) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'This workout day does not belong to your active plan.');
+    }
+
     // Check if the day has already been completed to avoid duplicates
-    const alreadyCompleted = session.completedDays.some(d => d.dayId.equals(dayId));
+    const alreadyCompleted = session.completedDays.some(
+      (d) => d.dayId.toString() === workoutDay._id.toString()
+    );
     if (alreadyCompleted) {
       // Or maybe update the existing one? For now, let's throw an error.
       throw new ApiError(httpStatus.BAD_REQUEST, 'This workout day has already been marked as complete.');
     }
 
-    session.completedDays.push({ dayId, notes, dateCompleted: new Date() });
+    session.completedDays.push({ dayId: workoutDay._id, notes, dateCompleted: new Date() });
     await session.save();
 
     // Send notification to the trainer

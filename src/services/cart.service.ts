@@ -36,7 +36,9 @@ class CartService {
     }
 
     const cart = await this.getOrCreateCart(userId);
-    const existingItemIndex = cart.items.findIndex(item => item.product.equals(productId));
+    const existingItemIndex = cart.items.findIndex(
+      item => item.product.toString() === productId.toString()
+    );
 
     if (existingItemIndex > -1) {
       // Update quantity
@@ -58,6 +60,40 @@ class CartService {
   public async getCartByUserId(userId: IUser['_id']): Promise<ICart> {
       const cart = await this.getOrCreateCart(userId);
       return cart.populate('items.product');
+  }
+
+  /**
+   * Update item quantity in cart
+   * @param {IUser['_id']} userId
+   * @param {Types.ObjectId} itemId
+   * @param {number} quantity
+   * @returns {Promise<ICart>}
+   */
+  public async updateCartItem(userId: IUser['_id'], itemId: Types.ObjectId, quantity: number): Promise<ICart> {
+    const cart = await this.getOrCreateCart(userId);
+    const itemIndex = cart.items.findIndex(item => item._id.equals(itemId));
+
+    if (itemIndex === -1) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Item not found in cart');
+    }
+
+    cart.items[itemIndex].quantity = quantity;
+    await cart.save();
+    return cart.populate('items.product');
+  }
+
+  /**
+   * Remove an item from the cart
+   * @param {IUser['_id']} userId
+   * @param {Types.ObjectId} itemId
+   * @returns {Promise<ICart>}
+   */
+  public async removeCartItem(userId: IUser['_id'], itemId: Types.ObjectId): Promise<ICart> {
+    const cart = await this.getOrCreateCart(userId);
+    cart.items = cart.items.filter(item => !item._id.equals(itemId));
+
+    await cart.save();
+    return cart.populate('items.product');
   }
 }
 

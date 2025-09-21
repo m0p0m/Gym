@@ -13,6 +13,11 @@ class OrderController {
     const orders = await orderService.getOrdersForUser(req.user!._id);
     res.status(httpStatus.OK).send(orders);
   });
+
+  public getOrder = catchAsync(async (req: Request, res: Response) => {
+    const order = await orderService.getOrderById(req.params.orderId, req.user!._id);
+    res.status(httpStatus.OK).send(order);
+  });
 }
 
 export default new OrderController();

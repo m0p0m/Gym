@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import config from '../config';
 import { IUser } from '../models/user.model';
 
@@ -13,7 +13,7 @@ class TokenService {
    */
   generateToken(
     userId: IUser['_id'],
-    expiresIn: string,
+    expiresIn: number, // Changed to number (seconds)
     type: string,
     secret: string = config.jwtSecret
   ): string {
@@ -22,15 +22,19 @@ class TokenService {
       iat: Math.floor(Date.now() / 1000),
       type,
     };
-    return jwt.sign(payload, secret, { expiresIn });
+    const signOptions: SignOptions = {
+      expiresIn,
+      algorithm: 'HS256',
+    };
+    return jwt.sign(payload, secret, signOptions);
   }
 
   /**
    * Generate auth tokens (access and refresh)
    */
   async generateAuthTokens(user: IUser) {
-    const accessTokenExpires = '30m';
-    const refreshTokenExpires = '30d';
+    const accessTokenExpires = 30 * 60; // 30 minutes in seconds
+    const refreshTokenExpires = 30 * 24 * 60 * 60; // 30 days in seconds
 
     const accessToken = this.generateToken(user._id, accessTokenExpires, tokenTypes.ACCESS);
     const refreshToken = this.generateToken(user._id, refreshTokenExpires, tokenTypes.REFRESH);

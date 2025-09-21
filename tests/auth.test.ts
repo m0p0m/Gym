@@ -19,18 +19,18 @@ describe('Auth Routes (OTP Flow)', () => {
   });
 
   describe('POST /api/v1/auth/send-otp', () => {
-    it('should return 200 OK and send an OTP', async () => {
+    it('should return 200 OK and create an OTP in the database', async () => {
       const res = await request(app)
         .post('/api/v1/auth/send-otp')
         .send({ phoneNumber })
         .expect(httpStatus.OK);
 
-      expect(res.body).toHaveProperty('message', 'OTP sent successfully.');
-      expect(res.body).toHaveProperty('otp'); // For testing purposes
+      expect(res.body).toHaveProperty('message', 'An OTP has been sent to your phone number.');
+      expect(res.body).not.toHaveProperty('otp');
 
       const otpDoc = await OTP.findOne({ phoneNumber });
       expect(otpDoc).toBeDefined();
-      expect(otpDoc?.otp).toBe(res.body.otp);
+      expect(otpDoc?.otp).toHaveLength(4); // Check that an OTP was generated
     });
   });
 

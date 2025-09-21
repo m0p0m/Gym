@@ -10,4 +10,18 @@ router.get('/', auth(), cartController.getCart);
 
 router.post('/items', auth(), validate(cartValidation.addItem), cartController.addItem);
 
+router.patch(
+  '/items/:itemId',
+  auth(),
+  validate(cartValidation.updateItem),
+  cartController.updateItem
+);
+
+router.delete(
+  '/items/:itemId',
+  auth(),
+  validate(cartValidation.removeItem),
+  cartController.removeItem
+);
+
 export default router;

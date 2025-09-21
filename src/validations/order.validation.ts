@@ -1,4 +1,12 @@
 import Joi from 'joi';
+import { Types } from 'mongoose';
+
+const objectId = Joi.string().custom((value, helpers) => {
+  if (!Types.ObjectId.isValid(value)) {
+    return helpers.error('any.invalid');
+  }
+  return value;
+}, 'Mongo ID');
 
 const createOrder = {
   body: Joi.object().keys({
@@ -10,6 +18,13 @@ const createOrder = {
   }),
 };
 
+const getOrder = {
+  params: Joi.object().keys({
+    orderId: objectId.required(),
+  }),
+};
+
 export default {
   createOrder,
+  getOrder,
 };

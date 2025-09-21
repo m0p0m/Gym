@@ -22,11 +22,18 @@ if (config.env !== 'test') {
   app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 }
 
-// Connect to Database
-connectDB();
+// Connect to Database, but not in test environment
+if (config.env !== 'test') {
+  connectDB();
+}
 
 // Middlewares
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    // Save the raw body buffer onto the request object
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Sanitize request data
@@ -37,7 +44,6 @@ app.use(compression());
 
 // Enable cors
 app.use(cors());
-app.options('*', cors());
 
 // v1 API Routes
 app.use('/api/v1', v1Routes);
@@ -52,7 +58,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
+    const message = error.message || 'An unexpected error occurred.';
     error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);

@@ -5,9 +5,9 @@ import User from '../src/models/user.model';
 import Role from '../src/models/role.model';
 import Permission from '../src/models/permission.model';
 import OTP from '../src/models/otp.model';
-import WorkoutPlan from '../src/models/workoutPlan.model';
-import WorkoutDay from '../src/models/workoutDay.model';
-import UserWorkoutSession from '../src/models/userWorkoutSession.model';
+import WorkoutPlan, { IWorkoutPlan } from '../src/models/workoutPlan.model';
+import WorkoutDay, { IWorkoutDay } from '../src/models/workoutDay.model';
+import UserWorkoutSession, { IUserWorkoutSession } from '../src/models/userWorkoutSession.model';
 
 describe('Workout Routes', () => {
   let trainerToken: string;
@@ -87,6 +87,34 @@ describe('Workout Routes', () => {
       const session = await UserWorkoutSession.findOne({ user: regularUser._id, plan: plan._id });
       expect(session).toBeDefined();
     });
+
+    it('should deactivate previous active plans when a new plan is assigned', async () => {
+      const planA = await WorkoutPlan.create({ ...workoutPlanPayload, name: 'Plan A', trainer: trainer._id });
+      const planB = await WorkoutPlan.create({ ...workoutPlanPayload, name: 'Plan B', trainer: trainer._id });
+
+      // Assign Plan A first
+      await request(app)
+        .post('/api/v1/workouts/plans/assign')
+        .set('Authorization', `Bearer ${trainerToken}`)
+        .send({ planId: planA._id, userId: regularUser._id })
+        .expect(httpStatus.OK);
+
+      const sessionA_before = await UserWorkoutSession.findOne({ user: regularUser._id, plan: planA._id });
+      expect(sessionA_before?.isActive).toBe(true);
+
+      // Assign Plan B second
+      await request(app)
+        .post('/api/v1/workouts/plans/assign')
+        .set('Authorization', `Bearer ${trainerToken}`)
+        .send({ planId: planB._id, userId: regularUser._id })
+        .expect(httpStatus.OK);
+
+      const sessionA_after = await UserWorkoutSession.findOne({ user: regularUser._id, plan: planA._id });
+      expect(sessionA_after?.isActive).toBe(false);
+
+      const sessionB = await UserWorkoutSession.findOne({ user: regularUser._id, plan: planB._id });
+      expect(sessionB?.isActive).toBe(true);
+    });
   });
 
   describe('GET /api/v1/workouts/sessions/my-plan', () => {
@@ -99,7 +127,7 @@ describe('Workout Routes', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(httpStatus.OK);
 
-      expect(res.body.plan._id).toBe(plan._id.toString());
+      expect((res.body.plan as any)._id).toBe(plan._id.toString());
     });
   });
 
@@ -115,9 +143,27 @@ describe('Workout Routes', () => {
         .send({ dayId: day._id, notes: 'Felt strong today.' })
         .expect(httpStatus.OK);
 
-      expect(res.body.completedDays).toHaveLength(1);
-      expect(res.body.completedDays[0].dayId).toBe(day._id.toString());
-      expect(res.body.completedDays[0].notes).toBe('Felt strong today.');
+      const session = res.body as any;
+      expect(session.completedDays).toHaveLength(1);
+      expect(session.completedDays[0].dayId).toBe(day._id.toString());
+      expect(session.completedDays[0].notes).toBe('Felt strong today.');
+    });
+
+    it('should return 403 FORBIDDEN if a user tries to complete a day from another plan', async () => {
+      // Create Plan A for the user
+      const planA = await WorkoutPlan.create({ ...workoutPlanPayload, name: 'Plan A', trainer: trainer._id });
+      await UserWorkoutSession.create({ user: regularUser._id, plan: planA._id });
+
+      // Create Plan B with a day (that the user is not assigned to)
+      const planB = await WorkoutPlan.create({ ...workoutPlanPayload, name: 'Plan B', trainer: trainer._id });
+      const dayB = await WorkoutDay.create({ plan: planB._id, dayOfWeek: 'Tuesday', name: 'Day from another plan' });
+
+      // User attempts to complete a day from Plan B
+      await request(app)
+        .post('/api/v1/workouts/sessions/complete')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ dayId: dayB._id })
+        .expect(httpStatus.FORBIDDEN);
     });
   });
 });

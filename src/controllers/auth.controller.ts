@@ -9,8 +9,8 @@ import catchAsync from '../utils/catchAsync';
 class AuthController {
   public sendOtp = catchAsync(async (req: Request, res: Response) => {
     const { phoneNumber } = req.body;
-    const otp = await authService.sendOtp(phoneNumber);
-    res.status(httpStatus.OK).send({ message: 'OTP sent successfully.', otp });
+    await authService.sendOtp(phoneNumber);
+    res.status(httpStatus.OK).send({ message: 'An OTP has been sent to your phone number.' });
   });
 
   public verifyOtp = catchAsync(async (req: Request, res: Response) => {

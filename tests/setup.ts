@@ -1,27 +1,24 @@
 import mongoose from 'mongoose';
-import config from '../src/config';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-// This would connect to a separate test database
-const setupTestDB = () => {
-  beforeAll(async () => {
-    // Note: In a real scenario, you'd use a different database for tests.
-    // For now, we'll point to the same one but the logic is here.
-    const testDatabaseUrl = config.databaseUrl + '-test';
-    await mongoose.connect(testDatabaseUrl);
-  });
+let mongoServer: MongoMemoryServer;
 
-  afterEach(async () => {
-    // Clean up the database after each test to ensure isolation
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-      const collection = collections[key];
-      await collection.deleteMany({});
-    }
-  });
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+  await mongoose.connect(mongoUri);
+});
 
-  afterAll(async () => {
-    await mongoose.disconnect();
-  });
-};
+afterEach(async () => {
+  // Clean up the database after each test to ensure isolation
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany({});
+  }
+});
 
-setupTestDB();
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});

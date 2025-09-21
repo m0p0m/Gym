@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { ZarinPal } from 'zarinpal-node-sdk';
+import ZarinPal from 'zarinpal-node-sdk';
 import { ApiError } from '../utils/ApiError';
 import config from '../config';
 import Order from '../models/order.model';
@@ -7,7 +7,8 @@ import Transaction from '../models/transaction.model';
 import { IUser } from '../models/user.model';
 import notificationService from './notification.service';
 
-const zarinpal = new ZarinPal(config.zarinpalMerchantId, {
+const zarinpal = new ZarinPal({
+  merchantId: config.zarinpalMerchantId,
   sandbox: config.env === 'development', // Use sandbox in development
 });
 

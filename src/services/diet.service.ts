@@ -29,7 +29,7 @@ interface FullDietPlanDto {
 
 class DietService {
   /**
-   * Creates a complete diet plan.
+   * Creates a complete diet plan. This version is optimized to reduce database calls.
    * @param {FullDietPlanDto} planData
    * @returns {Promise<IDietPlan>}
    */
@@ -47,15 +47,30 @@ class DietService {
         dayNumber: dayData.dayNumber,
       });
 
-      for (const mealData of dayData.meals) {
-        const meal = await Meal.create({
-          dietDay: dietDay._id,
-          name: mealData.name,
-          time: mealData.time,
-        });
+      const mealsToCreate = dayData.meals.map(mealData => ({
+        dietDay: dietDay._id,
+        name: mealData.name,
+        time: mealData.time,
+      }));
+      const createdMeals = await Meal.insertMany(mealsToCreate);
 
-        const foodItems = mealData.items.map(item => ({ ...item, meal: meal._id }));
-        await FoodItem.insertMany(foodItems);
+      // Create a map to associate meal names with their new IDs for this day
+      const mealIdMap = new Map(createdMeals.map(meal => [meal.name, meal._id]));
+
+      const allFoodItemsToCreate: any[] = [];
+      dayData.meals.forEach(mealData => {
+        const mealId = mealIdMap.get(mealData.name);
+        if (mealId) {
+          const foodItems = mealData.items.map(item => ({
+            ...item,
+            meal: mealId,
+          }));
+          allFoodItemsToCreate.push(...foodItems);
+        }
+      });
+
+      if (allFoodItemsToCreate.length > 0) {
+        await FoodItem.insertMany(allFoodItemsToCreate);
       }
     }
     return plan;
@@ -71,7 +86,16 @@ class DietService {
     if (!plan) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Diet plan not found');
     }
-    const session = await UserDietSession.create({ user: userId, plan: planId });
+
+    // Deactivate all other active diet sessions for this user
+    await UserDietSession.updateMany({ user: userId, isActive: true }, { $set: { isActive: false } });
+
+    // Create a new active session for the assigned plan
+    const session = await UserDietSession.create({
+      user: userId,
+      plan: planId,
+      isActive: true, // Explicitly set to true
+    });
     return session;
   }
 

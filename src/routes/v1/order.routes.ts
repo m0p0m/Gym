@@ -10,4 +10,6 @@ router.post('/', auth(), validate(orderValidation.createOrder), orderController.
 
 router.get('/', auth(), orderController.getMyOrders);
 
+router.get('/:orderId', auth(), validate(orderValidation.getOrder), orderController.getOrder);
+
 export default router;

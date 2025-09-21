@@ -15,6 +15,19 @@ class CartController {
     const cart = await cartService.addItemToCart(req.user!._id, new Types.ObjectId(productId), quantity);
     res.status(httpStatus.OK).send(cart);
   });
+
+  public updateItem = catchAsync(async (req: Request, res: Response) => {
+    const { itemId } = req.params;
+    const { quantity } = req.body;
+    const cart = await cartService.updateCartItem(req.user!._id, new Types.ObjectId(itemId), quantity);
+    res.status(httpStatus.OK).send(cart);
+  });
+
+  public removeItem = catchAsync(async (req: Request, res: Response) => {
+    const { itemId } = req.params;
+    const cart = await cartService.removeCartItem(req.user!._id, new Types.ObjectId(itemId));
+    res.status(httpStatus.OK).send(cart);
+  });
 }
 
 export default new CartController();

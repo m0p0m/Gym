@@ -10,6 +10,7 @@ const config = {
   jwtSecret: process.env.JWT_SECRET || 'a-very-secret-key',
   apiKey: process.env.API_KEY || 'a-very-secret-api-key', // A default for development
   zarinpalMerchantId: process.env.ZARINPAL_MERCHANT_ID || 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', // Placeholder
+  zarinpalSecret: process.env.ZARINPAL_SECRET || 'a-very-secret-zarinpal-key', // Placeholder for webhook secret
 };
 
 export default config;

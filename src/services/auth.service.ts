@@ -13,13 +13,16 @@ class AuthService {
   }
 
   /**
-   * Send an OTP to a user's phone number.
+   * Create and send an OTP to a user's phone number.
+   * In a real application, this would use an SMS gateway.
+   * For this simulation, we'll just log it to the console.
    */
-  async sendOtp(phoneNumber: string): Promise<string> {
+  async sendOtp(phoneNumber: string): Promise<void> {
     const otp = this.generateOtp();
     await OTP.create({ phoneNumber, otp });
-    console.log(`Generated OTP for ${phoneNumber}: ${otp}`);
-    return otp;
+    // In a real app, you would use an SMS service here to send the OTP.
+    // e.g., await smsService.send(phoneNumber, `Your OTP is: ${otp}`);
+    console.log(`[SIMULATION] Generated OTP for ${phoneNumber}: ${otp}`);
   }
 
   /**

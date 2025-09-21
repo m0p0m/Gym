@@ -3,6 +3,7 @@ import paymentController from '../../controllers/payment.controller';
 import paymentValidation from '../../validations/payment.validation';
 import auth from '../../middlewares/auth.middleware';
 import validate from '../../middlewares/validate';
+import verifyPaymentCallback from '../../middlewares/verifyPaymentCallback.middleware';
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.post(
 
 router.get(
   '/callback',
+  verifyPaymentCallback, // Secure the callback
   validate(paymentValidation.paymentCallback),
   paymentController.paymentCallback
 );

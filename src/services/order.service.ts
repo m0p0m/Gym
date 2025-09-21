@@ -63,6 +63,20 @@ class OrderService {
   public async getOrdersForUser(userId: IUser['_id']): Promise<any> {
     return Order.find({ user: userId }).sort({ createdAt: -1 });
   }
+
+  /**
+   * Get a single order by its ID, ensuring it belongs to the user
+   * @param {string} orderId
+   * @param {IUser['_id']} userId
+   * @returns {Promise<any>}
+   */
+  public async getOrderById(orderId: string, userId: IUser['_id']): Promise<any> {
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
+    }
+    return order;
+  }
 }
 
 export default new OrderService();
