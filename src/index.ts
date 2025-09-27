@@ -37,7 +37,6 @@ app.use(compression());
 
 // Enable cors
 app.use(cors());
-app.options('*', cors());
 
 // v1 API Routes
 app.use('/api/v1', v1Routes);
