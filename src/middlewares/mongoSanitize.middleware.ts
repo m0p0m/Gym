@@ -1,29 +1,57 @@
 import { Request, Response, NextFunction } from 'express';
+import httpStatus from 'http-status';
+import { ApiError } from '../utils/ApiError';
 
-const clean = (obj: any): any => {
-  if (Array.isArray(obj)) {
-    return obj.map(v => clean(v));
+// This function recursively checks an object for keys containing '$' or '.'
+const hasInvalidKeys = (obj: any): boolean => {
+  if (obj === null || typeof obj !== 'object') {
+    return false;
   }
-  if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((acc: { [key: string]: any }, key: string) => {
-      const newKey = key.replace(/\$/g, '').replace(/\./g, '');
-      acc[newKey] = clean(obj[key]);
-      return acc;
-    }, {});
+
+  // Use an iterative approach to avoid stack overflow on deep objects
+  const stack = [obj];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+
+    if (current === null || typeof current !== 'object') {
+      continue;
+    }
+
+    for (const key in current) {
+      if (Object.prototype.hasOwnProperty.call(current, key)) {
+        if (key.includes('$') || key.includes('.')) {
+          return true; // Found a prohibited key
+        }
+        // If the value is an object, add it to the stack to check its keys
+        if (typeof current[key] === 'object') {
+          stack.push(current[key]);
+        }
+      }
+    }
   }
-  return obj;
+
+  return false;
 };
 
 const customMongoSanitize = (req: Request, res: Response, next: NextFunction) => {
-  if (req.body) {
-    req.body = clean(req.body);
+  // Create shallow, plain copies of the request objects.
+  // This is the crucial step to avoid interacting with Express's internal,
+  // special objects (like req.query) which can cause the "read-only" error.
+  const bodyCopy = req.body ? { ...req.body } : undefined;
+  const queryCopy = req.query ? { ...req.query } : undefined;
+  const paramsCopy = req.params ? { ...req.params } : undefined;
+
+  if (
+    hasInvalidKeys(bodyCopy) ||
+    hasInvalidKeys(queryCopy) ||
+    hasInvalidKeys(paramsCopy)
+  ) {
+    // If invalid keys are found, reject the request
+    return next(new ApiError(httpStatus.BAD_REQUEST, 'Invalid characters in request data'));
   }
-  if (req.query) {
-    req.query = clean(req.query);
-  }
-  if (req.params) {
-    req.params = clean(req.params);
-  }
+
+  // If everything is clean, proceed to the next middleware
   next();
 };
 
