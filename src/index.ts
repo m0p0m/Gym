@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
+import customMongoSanitize from './middlewares/mongoSanitize.middleware';
 import compression from 'compression';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -30,14 +30,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Sanitize request data
-app.use(mongoSanitize());
+app.use(customMongoSanitize);
 
 // Gzip compression
 app.use(compression());
 
 // Enable cors
 app.use(cors());
-app.options('*', cors());
 
 // v1 API Routes
 app.use('/api/v1', v1Routes);

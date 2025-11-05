@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import dietController from '../../../controllers/diet.controller';
-import dietValidation from '../../../validations/diet.validation';
-import auth from '../../../middlewares/auth.middleware';
-import hasPermission from '../../../middlewares/permission.middleware';
-import validate from '../../../middlewares/validate';
+import dietController from '../../controllers/diet.controller';
+import dietValidation from '../../validations/diet.validation';
+import auth from '../../middlewares/auth.middleware';
+import hasPermission from '../../middlewares/permission.middleware';
+import validate from '../../middlewares/validate';
 
 const router = Router();
 
